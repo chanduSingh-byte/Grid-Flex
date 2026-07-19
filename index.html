@@ -34,7 +34,6 @@
   .font-display{font-family:'Space Grotesk',sans-serif}
   .font-mono{font-family:'JetBrains Mono',monospace}
 
-  /* crop marks */
   .crop::before,.crop::after{content:"";position:absolute;width:14px;height:14px;border-color:var(--muted);opacity:.6}
   .crop::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid}
   .crop::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid}
@@ -45,7 +44,6 @@
     position:relative;
   }
 
-  /* dimension line */
   .dim-label{
     font-family:'JetBrains Mono',monospace;
     font-size:11px;
@@ -87,6 +85,13 @@
     color:#3a1400;
     box-shadow:0 0 0 4px rgba(251,133,0,0.15);
   }
+  .chip.active.amber-active{
+    background:var(--amber);
+    border-color:var(--amber);
+    color:#3a2400;
+    box-shadow:0 0 0 4px rgba(255,183,3,0.15);
+  }
+  .chip.xs{padding:4px 9px;font-size:11px}
 
   .code-tab{
     font-family:'JetBrains Mono',monospace;
@@ -107,17 +112,8 @@
     word-break:break-word;
   }
 
-  /* animated floating grid icon */
   @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   .float{animation:floaty 5s ease-in-out infinite}
-
-  @keyframes drift{
-    0%{background-position:0 0, 0 0;}
-    100%{background-position:64px 64px, 64px 64px;}
-  }
-  .drift-bg{
-    animation:drift 6s linear infinite;
-  }
 
   @keyframes pulse-line{
     0%,100%{opacity:.25}
@@ -133,7 +129,6 @@
 
   ::selection{background:var(--amber);color:#231400}
 
-  /* scrollbar */
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-track{background:var(--bp-bg)}
   ::-webkit-scrollbar-thumb{background:var(--bp-line);border-radius:6px}
@@ -157,16 +152,39 @@
     0%,100%{background:var(--bp-panel-2);}
     50%{background:rgba(46,196,182,0.25);}
   }
+
+  .subtag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.05em;
+    color:var(--bp-bg);
+    background:var(--muted);
+    padding:2px 7px;
+    border-radius:999px;
+  }
+
+  .sheet-toggle{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 22px;
+    border-radius:10px;
+    border:1px solid var(--bp-line);
+    color:var(--muted);
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .sheet-toggle.on-flex.active{background:var(--teal);color:#04211d;border-color:var(--teal)}
+  .sheet-toggle.on-grid.active{background:var(--coral);color:#3a1400;border-color:var(--coral)}
 </style>
 </head>
 <body class="min-h-screen">
 
-<!-- NAV -->
-<nav class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-[#0B2544]/80 border-b border-[#2C577F]">
+<nav class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-[#0B284]/80 border-b border-[#2C577F]">
   <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
     <div class="font-display font-semibold tracking-tight text-[15px] flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-[--teal] inline-block"></span>
-      LAYOUT&nbsp;BLUEPRINTS
+Chandan Singh  
     </div>
     <div class="hidden md:flex items-center gap-6 font-mono text-[12px] text-[--muted]">
       <a href="#flex" class="hover:text-[--paper] transition">01 · flexbox</a>
@@ -177,7 +195,6 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <header class="relative pt-40 pb-24 px-6 overflow-hidden">
   <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
     <div class="reveal in">
@@ -226,11 +243,11 @@
     <span class="font-display text-[--teal] text-sm">01</span>
     <h2 class="font-display text-3xl font-semibold">Flexbox Container</h2>
   </div>
-  <p class="text-[--muted] max-w-2xl mb-10">One axis at a time. Flex lays children out along a <em>main axis</em> and lets you align them on the <em>cross axis</em>. Click a value below — the live rig updates instantly, in real CSS and in Tailwind.</p>
+  <p class="text-[--muted] max-w-2xl mb-3"><strong class="text-[--paper]">Definition:</strong> Flexbox (<code class="text-[--teal]">display:flex</code>) is a <em>one-dimensional</em> layout mode. It arranges children along a single line called the <strong class="text-[--paper]">main axis</strong>, and lets you align them across the perpendicular <strong class="text-[--paper]">cross axis</strong>. It shines whenever content needs to flow, wrap, or share leftover space — not when you need a fixed two-dimensional grid.</p>
+  <p class="text-[--muted] max-w-2xl mb-10">Click a value below — the live rig updates instantly, in real CSS and in Tailwind.</p>
 
   <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
 
-    <!-- LIVE DEMO -->
     <div class="panel crop rounded-xl p-6">
       <div class="flex justify-between items-center mb-4">
         <span class="dim-label">LIVE RIG</span>
@@ -243,10 +260,9 @@
         <div class="demo-item bg-[--teal]/80 text-[#04211d] h-16 w-20">04</div>
       </div>
 
-      <!-- controls -->
       <div class="mt-6 space-y-4">
         <div>
-          <p class="dim-label mb-2">flex-direction</p>
+          <p class="dim-label mb-2">flex-direction <span class="opacity-60">— which way is "main axis"</span></p>
           <div class="flex flex-wrap gap-2" data-group="direction">
             <button class="chip active" data-prop="direction" data-val="row">row</button>
             <button class="chip" data-prop="direction" data-val="row-reverse">row-reverse</button>
@@ -255,7 +271,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">justify-content <span class="opacity-60">(main axis)</span></p>
+          <p class="dim-label mb-2">justify-content <span class="opacity-60">(packs items along main axis)</span></p>
           <div class="flex flex-wrap gap-2" data-group="justify">
             <button class="chip active" data-prop="justify" data-val="flex-start">flex-start</button>
             <button class="chip" data-prop="justify" data-val="center">center</button>
@@ -266,7 +282,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">align-items <span class="opacity-60">(cross axis)</span></p>
+          <p class="dim-label mb-2">align-items <span class="opacity-60">(positions items on cross axis)</span></p>
           <div class="flex flex-wrap gap-2" data-group="align">
             <button class="chip active" data-prop="align" data-val="stretch">stretch</button>
             <button class="chip" data-prop="align" data-val="flex-start">flex-start</button>
@@ -276,7 +292,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">flex-wrap</p>
+          <p class="dim-label mb-2">flex-wrap <span class="opacity-60">(overflow onto new lines?)</span></p>
           <div class="flex flex-wrap gap-2" data-group="wrap">
             <button class="chip active" data-prop="wrap" data-val="nowrap">nowrap</button>
             <button class="chip" data-prop="wrap" data-val="wrap">wrap</button>
@@ -284,7 +300,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">gap</p>
+          <p class="dim-label mb-2">gap <span class="opacity-60">(space between items)</span></p>
           <div class="flex flex-wrap gap-2" data-group="gap">
             <button class="chip" data-prop="gap" data-val="0">0px</button>
             <button class="chip active" data-prop="gap" data-val="12">12px</button>
@@ -295,7 +311,6 @@
       </div>
     </div>
 
-    <!-- CODE PANEL -->
     <div class="panel crop rounded-xl p-6 flex flex-col">
       <div class="flex gap-4 border-b border-[--bp-line] mb-4">
         <div class="code-tab active" data-tab="css">style.css</div>
@@ -315,7 +330,8 @@
     <span class="font-display text-[--coral] text-sm">02</span>
     <h2 class="font-display text-3xl font-semibold">Grid Container</h2>
   </div>
-  <p class="text-[--muted] max-w-2xl mb-10">Two axes at once. Grid carves the container into rows <em>and</em> columns up front, then places children into that structure — ideal when layout needs real rows and columns, not just a line of items.</p>
+  <p class="text-[--muted] max-w-2xl mb-3"><strong class="text-[--paper]">Definition:</strong> Grid (<code class="text-[--coral]">display:grid</code>) is a <em>two-dimensional</em> layout mode. It carves the container into explicit rows <strong class="text-[--paper]">and</strong> columns up front — a track structure — then places children into that structure by coordinate, not by document flow order. Use it when the layout itself needs structure, not just a sequence of items.</p>
+  <p class="text-[--muted] max-w-2xl mb-10">Toggle a value, and watch the rig re-flow into the new track structure.</p>
 
   <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
 
@@ -335,7 +351,7 @@
 
       <div class="mt-6 space-y-4">
         <div>
-          <p class="dim-label mb-2">grid-template-columns</p>
+          <p class="dim-label mb-2">grid-template-columns <span class="opacity-60">(defines the column tracks)</span></p>
           <div class="flex flex-wrap gap-2" data-group="cols">
             <button class="chip" data-prop="cols" data-val="2">2 cols</button>
             <button class="chip active" data-prop="cols" data-val="3">3 cols</button>
@@ -344,7 +360,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">justify-items <span class="opacity-60">(inline axis)</span></p>
+          <p class="dim-label mb-2">justify-items <span class="opacity-60">(inline axis, inside each cell)</span></p>
           <div class="flex flex-wrap gap-2" data-group="jitems">
             <button class="chip active" data-prop="jitems" data-val="stretch">stretch</button>
             <button class="chip" data-prop="jitems" data-val="start">start</button>
@@ -353,7 +369,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">align-items <span class="opacity-60">(block axis)</span></p>
+          <p class="dim-label mb-2">align-items <span class="opacity-60">(block axis, inside each cell)</span></p>
           <div class="flex flex-wrap gap-2" data-group="aitems">
             <button class="chip active" data-prop="aitems" data-val="stretch">stretch</button>
             <button class="chip" data-prop="aitems" data-val="start">start</button>
@@ -362,7 +378,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">grid-auto-flow</p>
+          <p class="dim-label mb-2">grid-auto-flow <span class="opacity-60">(order auto-placed items fill)</span></p>
           <div class="flex flex-wrap gap-2" data-group="flow">
             <button class="chip active" data-prop="flow" data-val="row">row</button>
             <button class="chip" data-prop="flow" data-val="column">column</button>
@@ -370,7 +386,7 @@
           </div>
         </div>
         <div>
-          <p class="dim-label mb-2">gap</p>
+          <p class="dim-label mb-2">gap <span class="opacity-60">(gutter between tracks)</span></p>
           <div class="flex flex-wrap gap-2" data-group="ggap">
             <button class="chip" data-prop="ggap" data-val="0">0px</button>
             <button class="chip active" data-prop="ggap" data-val="12">12px</button>
@@ -394,101 +410,164 @@
   </div>
 </section>
 
-<!-- ============ ITEM-LEVEL PROPS ============ -->
+<!-- ============ ITEM-LEVEL PROPS (now interactive) ============ -->
 <section id="items" class="max-w-6xl mx-auto px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--amber] text-sm">03</span>
     <h2 class="font-display text-3xl font-semibold">Child / Item Properties</h2>
   </div>
-  <p class="text-[--muted] max-w-2xl mb-10">These apply to the <em>children</em>, not the container — they override how one item behaves inside the layout its parent already set up.</p>
+  <p class="text-[--muted] max-w-2xl mb-10"><strong class="text-[--paper]">Definition:</strong> these properties are set on the <em>children</em>, not the container. They override how one specific item behaves inside the layout its parent already established — so a container decides the rules, and an item can break one of those rules for itself. Every rig below is live: click a chip to change that item's property.</p>
 
   <div class="grid md:grid-cols-2 gap-6">
 
     <!-- flex-grow/shrink/basis -->
     <div class="panel crop rounded-xl p-6">
       <p class="font-display font-semibold mb-1 text-[--teal]">flex-grow / flex-shrink / flex-basis</p>
-      <p class="text-[--muted] text-[13px] mb-4">Controls how a flex item stretches, shrinks, or starts sized before free space is distributed.</p>
-      <div class="flex gap-3 h-16 mb-4">
-        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" style="flex:1 1 0%;">grow:1</div>
-        <div class="demo-item bg-[--teal]/60 border border-[--teal] text-[#04211d]" style="flex:2 1 0%;">grow:2</div>
-        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" style="flex:1 1 0%;">grow:1</div>
+      <p class="text-[--muted] text-[13px] mb-4"><strong class="text-[--paper]">grow</strong> = how much of the leftover free space an item claims, relative to siblings. <strong class="text-[--paper]">shrink</strong> = how much it's allowed to shrink below its basis when space runs out. <strong class="text-[--paper]">basis</strong> = its starting size before grow/shrink are applied.</p>
+      <div id="growDemo" class="flex gap-3 h-16 mb-4">
+        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" data-item="0">g:1</div>
+        <div class="demo-item bg-[--teal]/60 border border-[--teal] text-[#04211d]" data-item="1">g:2</div>
+        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" data-item="2">g:1</div>
       </div>
-      <pre class="codebox">.item { flex-grow: 2; }
-.item { flex-shrink: 0; }
-.item { flex-basis: 200px; }
-
-/* tailwind */
-class="grow-[2]"
-class="shrink-0"
-class="basis-[200px]"</pre>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item 1</span>
+          <div class="flex gap-1" data-group="grow0">
+            <button class="chip xs" data-prop="grow0" data-val="0">0</button>
+            <button class="chip xs active" data-prop="grow0" data-val="1">1</button>
+            <button class="chip xs" data-prop="grow0" data-val="2">2</button>
+            <button class="chip xs" data-prop="grow0" data-val="3">3</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item 2</span>
+          <div class="flex gap-1" data-group="grow1">
+            <button class="chip xs" data-prop="grow1" data-val="0">0</button>
+            <button class="chip xs" data-prop="grow1" data-val="1">1</button>
+            <button class="chip xs active" data-prop="grow1" data-val="2">2</button>
+            <button class="chip xs" data-prop="grow1" data-val="3">3</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item 3</span>
+          <div class="flex gap-1" data-group="grow2">
+            <button class="chip xs" data-prop="grow2" data-val="0">0</button>
+            <button class="chip xs active" data-prop="grow2" data-val="1">1</button>
+            <button class="chip xs" data-prop="grow2" data-val="2">2</button>
+            <button class="chip xs" data-prop="grow2" data-val="3">3</button>
+          </div>
+        </div>
+      </div>
+      <pre id="growCode" class="codebox"></pre>
     </div>
 
     <!-- order -->
     <div class="panel crop rounded-xl p-6">
       <p class="font-display font-semibold mb-1 text-[--teal]">order</p>
-      <p class="text-[--muted] text-[13px] mb-4">Reorders items visually without touching the HTML source order. Lower numbers render first.</p>
-      <div class="flex gap-3 h-16 mb-4">
-        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:3;">A · order:3</div>
-        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:1;">B · order:1</div>
-        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:2;">C · order:2</div>
+      <p class="text-[--muted] text-[13px] mb-4">Reorders items visually without touching the HTML source order (default order is <code>0</code> for every item; lower numbers render first). Great for reflowing layout at a breakpoint without rewriting markup.</p>
+      <div id="orderDemo" class="flex gap-3 h-16 mb-4">
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" data-item="a">A</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" data-item="b">B</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" data-item="c">C</div>
       </div>
-      <pre class="codebox">.a { order: 3; }
-.b { order: 1; }
-.c { order: 2; }
-
-/* tailwind */
-class="order-3"
-class="order-1"
-class="order-2"</pre>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item A</span>
+          <div class="flex gap-1" data-group="orderA">
+            <button class="chip xs" data-prop="orderA" data-val="1">1</button>
+            <button class="chip xs" data-prop="orderA" data-val="2">2</button>
+            <button class="chip xs active" data-prop="orderA" data-val="3">3</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item B</span>
+          <div class="flex gap-1" data-group="orderB">
+            <button class="chip xs active" data-prop="orderB" data-val="1">1</button>
+            <button class="chip xs" data-prop="orderB" data-val="2">2</button>
+            <button class="chip xs" data-prop="orderB" data-val="3">3</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">item C</span>
+          <div class="flex gap-1" data-group="orderC">
+            <button class="chip xs" data-prop="orderC" data-val="1">1</button>
+            <button class="chip xs active" data-prop="orderC" data-val="2">2</button>
+            <button class="chip xs" data-prop="orderC" data-val="3">3</button>
+          </div>
+        </div>
+      </div>
+      <pre id="orderCode" class="codebox"></pre>
     </div>
 
     <!-- align-self -->
     <div class="panel crop rounded-xl p-6">
       <p class="font-display font-semibold mb-1 text-[--coral]">align-self</p>
-      <p class="text-[--muted] text-[13px] mb-4">Overrides the container's align-items for just one item — works in both flex and grid.</p>
-      <div class="flex gap-3 h-24 mb-4" style="align-items:stretch;">
-        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:flex-start;">start</div>
-        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:center;">center</div>
-        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:flex-end;">end</div>
+      <p class="text-[--muted] text-[13px] mb-4">Overrides the container's <code>align-items</code> for just one item — works in both flex and grid, on the cross/block axis.</p>
+      <div id="selfDemo" class="flex gap-3 h-24 mb-4" style="align-items:stretch;">
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" data-item="0" style="align-self:flex-start;">start</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" data-item="1" style="align-self:center;">center</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" data-item="2" style="align-self:flex-end;">end</div>
       </div>
-      <pre class="codebox">.item { align-self: center; }
-
-/* tailwind */
-class="self-center"
-class="self-start"
-class="self-end"</pre>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">middle item</span>
+          <div class="flex gap-1" data-group="selfmid">
+            <button class="chip xs" data-prop="selfmid" data-val="flex-start">start</button>
+            <button class="chip xs active" data-prop="selfmid" data-val="center">center</button>
+            <button class="chip xs" data-prop="selfmid" data-val="flex-end">end</button>
+            <button class="chip xs" data-prop="selfmid" data-val="stretch">stretch</button>
+          </div>
+        </div>
+      </div>
+      <pre id="selfCode" class="codebox"></pre>
     </div>
 
     <!-- grid-column/row span -->
     <div class="panel crop rounded-xl p-6">
       <p class="font-display font-semibold mb-1 text-[--coral]">grid-column / grid-row span</p>
-      <p class="text-[--muted] text-[13px] mb-4">Lets one grid child stretch across multiple tracks — the classic "featured card" pattern.</p>
-      <div class="grid grid-cols-3 gap-3 h-24 mb-4">
-        <div class="demo-item bg-[--coral]/80 text-[#3a1400]" style="grid-column: span 2;">span 2 cols</div>
+      <p class="text-[--muted] text-[13px] mb-4">Lets one grid child stretch across multiple tracks — the classic "featured card" pattern. Numbers are how many tracks the item consumes, starting from its placement.</p>
+      <div id="spanDemo" class="grid grid-cols-3 gap-3 h-24 mb-4">
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400]" data-item="feature" style="grid-column: span 2;">span 2</div>
         <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral]">1×1</div>
-        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral]" style="grid-row: span 1;">1×1</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral]">1×1</div>
       </div>
-      <pre class="codebox">.feature {
-  grid-column: span 2 / span 2;
-  grid-row: span 1;
-}
-
-/* tailwind */
-class="col-span-2 row-span-1"</pre>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">col span</span>
+          <div class="flex gap-1" data-group="colspan">
+            <button class="chip xs" data-prop="colspan" data-val="1">1</button>
+            <button class="chip xs active" data-prop="colspan" data-val="2">2</button>
+            <button class="chip xs" data-prop="colspan" data-val="3">3</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="subtag">row span</span>
+          <div class="flex gap-1" data-group="rowspan">
+            <button class="chip xs active" data-prop="rowspan" data-val="1">1</button>
+            <button class="chip xs" data-prop="rowspan" data-val="2">2</button>
+          </div>
+        </div>
+      </div>
+      <pre id="spanCode" class="codebox"></pre>
     </div>
   </div>
 </section>
 
-<!-- ============ CHEATSHEET ============ -->
+<!-- ============ CHEATSHEET (split into two dedicated sheets) ============ -->
 <section id="cheatsheet" class="max-w-6xl mx-auto px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--paper] text-sm">04</span>
     <h2 class="font-display text-3xl font-semibold">Full Cheat Sheet</h2>
   </div>
-  <p class="text-[--muted] max-w-2xl mb-10">Every property covered above, plus a few extras, in one scannable table — normal CSS next to its Tailwind class.</p>
+  <p class="text-[--muted] max-w-2xl mb-6">Two separate sheets — Flexbox and Grid — each with every container and item property, normal CSS next to its Tailwind class.</p>
+
+  <div class="flex gap-3 mb-6">
+    <button class="sheet-toggle on-flex active" data-sheet="flex">Flexbox sheet</button>
+    <button class="sheet-toggle on-grid" data-sheet="grid">Grid sheet</button>
+  </div>
 
   <div class="panel crop rounded-xl overflow-x-auto">
-    <table class="w-full text-left border-collapse min-w-[720px]">
+    <table class="w-full text-left border-collapse min-w-[760px]">
       <thead>
         <tr class="font-mono text-[11px] text-[--amber] tracking-wide border-b border-[--bp-line]">
           <th class="py-3 px-5">Property</th>
@@ -509,7 +588,6 @@ class="col-span-2 row-span-1"</pre>
 </footer>
 
 <script>
-  // reveal on scroll
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
   }, {threshold:0.12});
@@ -625,7 +703,6 @@ class="col-span-2 row-span-1"</pre>
     btn.addEventListener('click', ()=>{
       const {prop,val} = btn.dataset;
       gridState[prop] = (prop==='ggap') ? Number(val) : val;
-      if(prop==='ggap') gridState.gap = Number(val);
       document.querySelectorAll(`#grid [data-group="${btn.closest('[data-group]').dataset.group}"] .chip`).forEach(c=>c.classList.remove('active','grid-active'));
       btn.classList.add('active','grid-active');
       applyGrid();
@@ -643,39 +720,180 @@ class="col-span-2 row-span-1"</pre>
 
   applyGrid();
 
-  /* ---------------- CHEAT SHEET TABLE ---------------- */
-  const rows = [
-    ['display: flex','display','flex','flex','container'],
-    ['display: grid','display','grid','grid','container'],
-    ['flex-direction: column','flex','flex-col','flex','container'],
-    ['flex-wrap: wrap','flex','flex-wrap','flex','container'],
-    ['justify-content: center','flex/grid','justify-center','both','container'],
-    ['align-items: center','flex/grid','items-center','both','container'],
-    ['align-content: center','flex/grid','content-center','both','container'],
-    ['gap: 16px','flex/grid','gap-4','both','container'],
-    ['flex-grow: 1','flex','grow','flex','item'],
-    ['flex-shrink: 0','flex','shrink-0','flex','item'],
-    ['flex-basis: 200px','flex','basis-[200px]','flex','item'],
-    ['order: 2','flex/grid','order-2','both','item'],
-    ['align-self: end','flex/grid','self-end','both','item'],
-    ['grid-template-columns: repeat(3,1fr)','grid','grid-cols-3','grid','container'],
-    ['grid-template-rows: repeat(2,1fr)','grid','grid-rows-2','grid','container'],
-    ['grid-auto-flow: column','grid','grid-flow-col','grid','container'],
-    ['justify-items: center','grid','justify-items-center','grid','container'],
-    ['grid-column: span 2','grid','col-span-2','grid','item'],
-    ['grid-row: span 2','grid','row-span-2','grid','item'],
-    ['place-items: center','grid','place-items-center','grid','container'],
+  /* ---------------- ITEM PROPS: flex-grow ---------------- */
+  const growState = [1,2,1];
+  const growItems = document.querySelectorAll('#growDemo [data-item]');
+  const growCode = document.getElementById('growCode');
+  function applyGrow(){
+    growItems.forEach((el,i)=>{ el.style.flexGrow = growState[i]; el.textContent = 'g:'+growState[i]; });
+    growCode.textContent =
+`.item-1 { flex-grow: ${growState[0]}; }
+.item-2 { flex-grow: ${growState[1]}; }
+.item-3 { flex-grow: ${growState[2]}; }
+
+/* tailwind */
+class="grow-[${growState[0]}]"
+class="grow-[${growState[1]}]"
+class="grow-[${growState[2]}]"`;
+  }
+  ['grow0','grow1','grow2'].forEach((g,i)=>{
+    document.querySelectorAll(`[data-group="${g}"] .chip`).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        growState[i] = Number(btn.dataset.val);
+        document.querySelectorAll(`[data-group="${g}"] .chip`).forEach(c=>c.classList.remove('active'));
+        btn.classList.add('active');
+        applyGrow();
+      });
+    });
+  });
+  applyGrow();
+
+  /* ---------------- ITEM PROPS: order ---------------- */
+  const orderState = { a:3, b:1, c:2 };
+  const orderItems = { a: document.querySelector('#orderDemo [data-item="a"]'), b: document.querySelector('#orderDemo [data-item="b"]'), c: document.querySelector('#orderDemo [data-item="c"]') };
+  const orderCode = document.getElementById('orderCode');
+  function applyOrder(){
+    orderItems.a.style.order = orderState.a; orderItems.a.textContent = 'A · order:'+orderState.a;
+    orderItems.b.style.order = orderState.b; orderItems.b.textContent = 'B · order:'+orderState.b;
+    orderItems.c.style.order = orderState.c; orderItems.c.textContent = 'C · order:'+orderState.c;
+    orderCode.textContent =
+`.a { order: ${orderState.a}; }
+.b { order: ${orderState.b}; }
+.c { order: ${orderState.c}; }
+
+/* tailwind */
+class="order-${orderState.a}"
+class="order-${orderState.b}"
+class="order-${orderState.c}"`;
+  }
+  [['orderA','a'],['orderB','b'],['orderC','c']].forEach(([g,key])=>{
+    document.querySelectorAll(`[data-group="${g}"] .chip`).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        orderState[key] = Number(btn.dataset.val);
+        document.querySelectorAll(`[data-group="${g}"] .chip`).forEach(c=>c.classList.remove('active'));
+        btn.classList.add('active');
+        applyOrder();
+      });
+    });
+  });
+  applyOrder();
+
+  /* ---------------- ITEM PROPS: align-self ---------------- */
+  const selfMid = document.querySelector('#selfDemo [data-item="1"]');
+  const selfCode = document.getElementById('selfCode');
+  function applySelf(val){
+    selfMid.style.alignSelf = val;
+    selfMid.textContent = val;
+    const twMap = {'flex-start':'self-start','center':'self-center','flex-end':'self-end','stretch':'self-stretch'};
+    selfCode.textContent =
+`.middle-item { align-self: ${val}; }
+
+/* tailwind */
+class="${twMap[val]}"`;
+  }
+  document.querySelectorAll('[data-group="selfmid"] .chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-group="selfmid"] .chip').forEach(c=>c.classList.remove('active','amber-active'));
+      btn.classList.add('active','amber-active');
+      applySelf(btn.dataset.val);
+    });
+  });
+  applySelf('center');
+
+  /* ---------------- ITEM PROPS: grid span ---------------- */
+  const spanState = { col: 2, row: 1 };
+  const spanItem = document.querySelector('#spanDemo [data-item="feature"]');
+  const spanCode = document.getElementById('spanCode');
+  function applySpan(){
+    spanItem.style.gridColumn = `span ${spanState.col}`;
+    spanItem.style.gridRow = `span ${spanState.row}`;
+    spanItem.textContent = `span ${spanState.col}×${spanState.row}`;
+    spanCode.textContent =
+`.feature {
+  grid-column: span ${spanState.col} / span ${spanState.col};
+  grid-row: span ${spanState.row} / span ${spanState.row};
+}
+
+/* tailwind */
+class="col-span-${spanState.col} row-span-${spanState.row}"`;
+  }
+  document.querySelectorAll('[data-group="colspan"] .chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      spanState.col = Number(btn.dataset.val);
+      document.querySelectorAll('[data-group="colspan"] .chip').forEach(c=>c.classList.remove('active','grid-active'));
+      btn.classList.add('active','grid-active');
+      applySpan();
+    });
+  });
+  document.querySelectorAll('[data-group="rowspan"] .chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      spanState.row = Number(btn.dataset.val);
+      document.querySelectorAll('[data-group="rowspan"] .chip').forEach(c=>c.classList.remove('active','grid-active'));
+      btn.classList.add('active','grid-active');
+      applySpan();
+    });
+  });
+  applySpan();
+
+  /* ---------------- CHEAT SHEETS (split flex / grid) ---------------- */
+  const flexRows = [
+    ['display: flex','flex','container'],
+    ['flex-direction: row | row-reverse | column | column-reverse','flex-row / flex-row-reverse / flex-col / flex-col-reverse','container'],
+    ['flex-wrap: nowrap | wrap | wrap-reverse','flex-nowrap / flex-wrap / flex-wrap-reverse','container'],
+    ['justify-content: flex-start | center | flex-end | space-between | space-around | space-evenly','justify-start / justify-center / justify-end / justify-between / justify-around / justify-evenly','container'],
+    ['align-items: stretch | flex-start | center | flex-end | baseline','items-stretch / items-start / items-center / items-end / items-baseline','container'],
+    ['align-content: flex-start | center | flex-end | space-between','content-start / content-center / content-end / content-between','container (multi-line)'],
+    ['gap: 16px','gap-4','container'],
+    ['flex-grow: 2','grow-[2]','item'],
+    ['flex-shrink: 0','shrink-0','item'],
+    ['flex-basis: 200px','basis-[200px]','item'],
+    ['flex: 1 1 0%','flex-1','item (shorthand)'],
+    ['order: 2','order-2','item'],
+    ['align-self: center','self-center','item'],
   ];
-  const tbody = document.getElementById('cheatBody');
-  tbody.innerHTML = rows.map((r,i)=>`
-    <tr class="border-b border-[--bp-line]/60 hover:bg-white/[0.03] transition">
-      <td class="py-2.5 px-5 text-[--paper]">${r[0].split(':')[0]}</td>
-      <td class="py-2.5 px-5 text-[--muted]">${r[0]}</td>
-      <td class="py-2.5 px-5 text-[--amber]">${r[2]}</td>
-      <td class="py-2.5 px-5 text-[--muted]">
-        <span class="px-2 py-0.5 rounded-full border border-[--bp-line] text-[10px]">${r[4]}</span>
-      </td>
-    </tr>`).join('');
+  const gridRows = [
+    ['display: grid','grid','container'],
+    ['grid-template-columns: repeat(3, 1fr)','grid-cols-3','container'],
+    ['grid-template-rows: repeat(2, 1fr)','grid-rows-2','container'],
+    ['grid-template-columns: repeat(auto-fit, minmax(120px,1fr))','grid-cols-[repeat(auto-fit,minmax(120px,1fr))]','container'],
+    ['grid-auto-flow: column','grid-flow-col','container'],
+    ['grid-auto-flow: row dense','grid-flow-row-dense','container'],
+    ['justify-items: center','justify-items-center','container'],
+    ['align-items: center','items-center','container'],
+    ['place-items: center','place-items-center','container (shorthand)'],
+    ['justify-content: center','justify-center','container (tracks in grid)'],
+    ['align-content: center','content-center','container (tracks in grid)'],
+    ['gap: 16px','gap-4','container'],
+    ['grid-column: span 2 / span 2','col-span-2','item'],
+    ['grid-row: span 2 / span 2','row-span-2','item'],
+    ['grid-column-start: 2','col-start-2','item'],
+    ['justify-self: center','justify-self-center','item'],
+    ['align-self: end','self-end','item'],
+    ['place-self: center','place-self-center','item (shorthand)'],
+  ];
+
+  const cheatBody = document.getElementById('cheatBody');
+  function renderSheet(rows, accentClass){
+    cheatBody.innerHTML = rows.map(r=>`
+      <tr class="border-b border-[--bp-line]/60 hover:bg-white/[0.03] transition">
+        <td class="py-2.5 px-5 text-[--paper]">${r[0].split(':')[0]}</td>
+        <td class="py-2.5 px-5 text-[--muted]">${r[0]}</td>
+        <td class="py-2.5 px-5 ${accentClass}">${r[1]}</td>
+        <td class="py-2.5 px-5 text-[--muted]">
+          <span class="px-2 py-0.5 rounded-full border border-[--bp-line] text-[10px]">${r[2]}</span>
+        </td>
+      </tr>`).join('');
+  }
+  renderSheet(flexRows, 'text-[--teal]');
+
+  document.querySelectorAll('.sheet-toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.sheet-toggle').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      if(btn.dataset.sheet==='flex'){ renderSheet(flexRows,'text-[--teal]'); }
+      else { renderSheet(gridRows,'text-[--coral]'); }
+    });
+  });
 </script>
 </body>
 </html>

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0B2544">
 <title>Layout Blueprints — Flexbox & Grid, CSS vs Tailwind</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,12 +177,108 @@
   }
   .sheet-toggle.on-flex.active{background:var(--teal);color:#04211d;border-color:var(--teal)}
   .sheet-toggle.on-grid.active{background:var(--coral);color:#3a1400;border-color:var(--coral)}
+
+  /* ---------- MOBILE / ANDROID RESPONSIVE LAYER ---------- */
+
+  /* touch feedback on every tappable control */
+  .chip, .sheet-toggle, .code-tab, a, button{
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chip:active, .sheet-toggle:active{ transform: scale(0.94); }
+  .chip, .sheet-toggle{ transition: all .18s ease, transform .12s ease; }
+
+  /* hamburger */
+  .hamburger{
+    width:34px;height:34px;
+    display:none;
+    align-items:center;justify-content:center;
+    border:1px solid var(--bp-line);
+    border-radius:8px;
+    background:transparent;
+    position:relative;
+    cursor:pointer;
+  }
+  .hamburger span{
+    position:absolute;left:8px;width:18px;height:2px;background:var(--paper);
+    border-radius:2px;
+    transition:transform .3s ease, opacity .3s ease, top .3s ease;
+  }
+  .hamburger span:nth-child(1){top:12px}
+  .hamburger span:nth-child(2){top:16px}
+  .hamburger span:nth-child(3){top:20px}
+  .hamburger.open span:nth-child(1){top:16px;transform:rotate(45deg)}
+  .hamburger.open span:nth-child(2){opacity:0}
+  .hamburger.open span:nth-child(3){top:16px;transform:rotate(-45deg)}
+
+  #mobileMenu{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+    border-top:1px solid transparent;
+  }
+  #mobileMenu.open{
+    max-height:260px;
+    border-top:1px solid var(--bp-line);
+  }
+  #mobileMenu a{
+    display:flex;align-items:center;gap:8px;
+    padding:14px 22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--muted);
+    border-bottom:1px solid var(--bp-line-soft);
+    -webkit-tap-highlight-color: transparent;
+  }
+  #mobileMenu a:active{ background:rgba(46,196,182,0.08); color:var(--paper); }
+
+  @media (max-width: 767px){
+    .hamburger{ display:flex; }
+
+    h1{ font-size:2.15rem !important; line-height:1.15 !important; }
+    h2{ font-size:1.5rem !important; }
+
+    section{ padding-top:3.25rem !important; padding-bottom:3.25rem !important; }
+    header{ padding-top:6.5rem !important; padding-bottom:2.75rem !important; }
+
+    .panel{ padding:16px !important; }
+    .float{ animation-duration:6s; }
+
+    pre.codebox{ font-size:11px; }
+
+    .demo-item{ font-size:11px; }
+
+    table{ min-width:640px !important; }
+
+    .sheet-toggle{ flex:1; text-align:center; padding:10px 12px; font-size:13px; }
+  }
+
+  @media (max-width: 420px){
+    h1{ font-size:1.8rem !important; }
+    .chip{ font-size:11px; padding:5px 10px; }
+  }
+
+  /* respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
+
+  /* small tap-scale entrance for demo items so mobile feels alive */
+  @keyframes popIn{
+    0%{ transform:scale(.85); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .demo-item{ animation: popIn .5s cubic-bezier(.34,1.56,.64,1) backwards; }
 </style>
 </head>
 <body class="min-h-screen">
 
 <nav class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-[#0B284]/80 border-b border-[#2C577F]">
-  <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
     <div class="font-display font-semibold tracking-tight text-[15px] flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-[--teal] inline-block"></span>
 Chandan Singh  
@@ -192,24 +289,33 @@ Chandan Singh
       <a href="#items" class="hover:text-[--paper] transition">03 · item props</a>
       <a href="#cheatsheet" class="hover:text-[--paper] transition">04 · cheat sheet</a>
     </div>
+    <button id="hamburgerBtn" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div id="mobileMenu">
+    <a href="#flex" data-close>01 · flexbox</a>
+    <a href="#grid" data-close>02 · grid</a>
+    <a href="#items" data-close>03 · item props</a>
+    <a href="#cheatsheet" data-close>04 · cheat sheet</a>
   </div>
 </nav>
 
-<header class="relative pt-40 pb-24 px-6 overflow-hidden">
-  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+<header class="relative pt-28 sm:pt-40 pb-16 sm:pb-24 px-4 sm:px-6 overflow-hidden">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 sm:gap-12 items-center">
     <div class="reveal in">
-      <p class="font-mono text-[12px] text-[--amber] tracking-[0.2em] mb-4">CSS LAYOUT · REVISION SHEET</p>
-      <h1 class="font-display text-5xl md:text-6xl font-semibold leading-[1.05] mb-6">
+      <p class="font-mono text-[11px] sm:text-[12px] text-[--amber] tracking-[0.2em] mb-4">CSS LAYOUT · REVISION SHEET</p>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl font-semibold leading-[1.1] mb-5 sm:mb-6">
         Flexbox & Grid,<br>
         <span class="text-[--teal]">measured</span> &amp; <span class="text-[--coral]">annotated</span>.
       </h1>
-      <p class="text-[--muted] text-[16px] leading-relaxed max-w-md mb-8">
+      <p class="text-[--muted] text-[15px] sm:text-[16px] leading-relaxed max-w-md mb-7 sm:mb-8">
         Every property, drawn to scale. Toggle a value, watch the box move, read the exact
         CSS rule next to its Tailwind class — no guessing, no scrolling through docs.
       </p>
-      <div class="flex gap-3 font-mono text-[12px]">
-        <a href="#flex" class="px-5 py-3 rounded-lg bg-[--teal] text-[#04211d] font-semibold hover:brightness-110 transition">Start with Flexbox →</a>
-        <a href="#grid" class="px-5 py-3 rounded-lg border border-[--bp-line] text-[--paper] hover:border-[--coral] transition">Jump to Grid →</a>
+      <div class="flex flex-col sm:flex-row gap-3 font-mono text-[12px]">
+        <a href="#flex" class="text-center px-5 py-3 rounded-lg bg-[--teal] text-[#04211d] font-semibold hover:brightness-110 active:scale-95 transition">Start with Flexbox →</a>
+        <a href="#grid" class="text-center px-5 py-3 rounded-lg border border-[--bp-line] text-[--paper] hover:border-[--coral] active:scale-95 transition">Jump to Grid →</a>
       </div>
     </div>
     <div class="relative float">
@@ -238,7 +344,7 @@ Chandan Singh
 </header>
 
 <!-- ============ FLEXBOX SECTION ============ -->
-<section id="flex" class="max-w-6xl mx-auto px-6 py-20 reveal">
+<section id="flex" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--teal] text-sm">01</span>
     <h2 class="font-display text-3xl font-semibold">Flexbox Container</h2>
@@ -325,7 +431,7 @@ Chandan Singh
 </section>
 
 <!-- ============ GRID SECTION ============ -->
-<section id="grid" class="max-w-6xl mx-auto px-6 py-20 reveal">
+<section id="grid" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--coral] text-sm">02</span>
     <h2 class="font-display text-3xl font-semibold">Grid Container</h2>
@@ -411,14 +517,14 @@ Chandan Singh
 </section>
 
 <!-- ============ ITEM-LEVEL PROPS (now interactive) ============ -->
-<section id="items" class="max-w-6xl mx-auto px-6 py-20 reveal">
+<section id="items" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--amber] text-sm">03</span>
     <h2 class="font-display text-3xl font-semibold">Child / Item Properties</h2>
   </div>
   <p class="text-[--muted] max-w-2xl mb-10"><strong class="text-[--paper]">Definition:</strong> these properties are set on the <em>children</em>, not the container. They override how one specific item behaves inside the layout its parent already established — so a container decides the rules, and an item can break one of those rules for itself. Every rig below is live: click a chip to change that item's property.</p>
 
-  <div class="grid md:grid-cols-2 gap-6">
+  <div class="grid md:grid-cols-2 gap-4 sm:gap-6">
 
     <!-- flex-grow/shrink/basis -->
     <div class="panel crop rounded-xl p-6">
@@ -554,7 +660,7 @@ Chandan Singh
 </section>
 
 <!-- ============ CHEATSHEET (split into two dedicated sheets) ============ -->
-<section id="cheatsheet" class="max-w-6xl mx-auto px-6 py-20 reveal">
+<section id="cheatsheet" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 reveal">
   <div class="flex items-baseline gap-4 mb-2">
     <span class="font-display text-[--paper] text-sm">04</span>
     <h2 class="font-display text-3xl font-semibold">Full Cheat Sheet</h2>
@@ -565,6 +671,7 @@ Chandan Singh
     <button class="sheet-toggle on-flex active" data-sheet="flex">Flexbox sheet</button>
     <button class="sheet-toggle on-grid" data-sheet="grid">Grid sheet</button>
   </div>
+  <p class="md:hidden text-[--muted] font-mono text-[10px] mb-3">↔ swipe the table to see all columns</p>
 
   <div class="panel crop rounded-xl overflow-x-auto">
     <table class="w-full text-left border-collapse min-w-[760px]">
@@ -588,6 +695,22 @@ Chandan Singh
 </footer>
 
 <script>
+  /* ---------------- MOBILE HAMBURGER MENU ---------------- */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburgerBtn.addEventListener('click', ()=>{
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburgerBtn.classList.toggle('open', isOpen);
+    hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  mobileMenu.querySelectorAll('a[data-close]').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      mobileMenu.classList.remove('open');
+      hamburgerBtn.classList.remove('open');
+      hamburgerBtn.setAttribute('aria-expanded','false');
+    });
+  });
+
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
   }, {threshold:0.12});

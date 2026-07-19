@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Blueprints — Flexbox & Grid, CSS vs Tailwind</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bp-bg:#0B2544;
+    --bp-panel:#0E2F58;
+    --bp-panel-2:#123A6B;
+    --bp-line:#2C577F;
+    --bp-line-soft:rgba(127,179,213,0.14);
+    --paper:#EAF2FB;
+    --muted:#8FAAC9;
+    --teal:#2EC4B6;
+    --amber:#FFB703;
+    --coral:#FB8500;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bp-bg);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    background-image:
+      linear-gradient(var(--bp-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bp-line-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .font-display{font-family:'Space Grotesk',sans-serif}
+  .font-mono{font-family:'JetBrains Mono',monospace}
+
+  /* crop marks */
+  .crop::before,.crop::after{content:"";position:absolute;width:14px;height:14px;border-color:var(--muted);opacity:.6}
+  .crop::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid}
+  .crop::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid}
+
+  .panel{
+    background:var(--bp-panel);
+    border:1px solid var(--bp-line);
+    position:relative;
+  }
+
+  /* dimension line */
+  .dim-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+  }
+
+  .demo-item{
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:600;
+    border-radius:6px;
+    transition:all .45s cubic-bezier(.65,0,.35,1);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:6px 12px;
+    border:1px solid var(--bp-line);
+    border-radius:999px;
+    color:var(--muted);
+    transition:all .2s ease;
+    cursor:pointer;
+    background:transparent;
+    white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--teal);color:var(--paper)}
+  .chip.active{
+    background:var(--teal);
+    color:#04211d;
+    border-color:var(--teal);
+    box-shadow:0 0 0 4px rgba(46,196,182,0.15);
+  }
+  .chip.active.grid-active{
+    background:var(--coral);
+    border-color:var(--coral);
+    color:#3a1400;
+    box-shadow:0 0 0 4px rgba(251,133,0,0.15);
+  }
+
+  .code-tab{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:6px 14px;
+    color:var(--muted);
+    border-bottom:2px solid transparent;
+    cursor:pointer;
+  }
+  .code-tab.active{color:var(--amber);border-color:var(--amber)}
+
+  pre.codebox{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    line-height:1.6;
+    color:#BFE3D8;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  /* animated floating grid icon */
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .float{animation:floaty 5s ease-in-out infinite}
+
+  @keyframes drift{
+    0%{background-position:0 0, 0 0;}
+    100%{background-position:64px 64px, 64px 64px;}
+  }
+  .drift-bg{
+    animation:drift 6s linear infinite;
+  }
+
+  @keyframes pulse-line{
+    0%,100%{opacity:.25}
+    50%{opacity:.9}
+  }
+  .pulse-line{animation:pulse-line 2.4s ease-in-out infinite}
+
+  .reveal{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .reveal.in{opacity:1;transform:translateY(0)}
+
+  ::selection{background:var(--amber);color:#231400}
+
+  /* scrollbar */
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bp-bg)}
+  ::-webkit-scrollbar-thumb{background:var(--bp-line);border-radius:6px}
+
+  .glow-teal{box-shadow:0 0 40px rgba(46,196,182,0.15)}
+  .glow-coral{box-shadow:0 0 40px rgba(251,133,0,0.15)}
+
+  .hero-grid-anim{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:8px;
+  }
+  .hero-cell{
+    background:var(--bp-panel-2);
+    border:1px solid var(--bp-line);
+    border-radius:4px;
+    animation:cellPulse 3.6s ease-in-out infinite;
+  }
+  @keyframes cellPulse{
+    0%,100%{background:var(--bp-panel-2);}
+    50%{background:rgba(46,196,182,0.25);}
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAV -->
+<nav class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-[#0B2544]/80 border-b border-[#2C577F]">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
+    <div class="font-display font-semibold tracking-tight text-[15px] flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[--teal] inline-block"></span>
+      LAYOUT&nbsp;BLUEPRINTS
+    </div>
+    <div class="hidden md:flex items-center gap-6 font-mono text-[12px] text-[--muted]">
+      <a href="#flex" class="hover:text-[--paper] transition">01 · flexbox</a>
+      <a href="#grid" class="hover:text-[--paper] transition">02 · grid</a>
+      <a href="#items" class="hover:text-[--paper] transition">03 · item props</a>
+      <a href="#cheatsheet" class="hover:text-[--paper] transition">04 · cheat sheet</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="relative pt-40 pb-24 px-6 overflow-hidden">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    <div class="reveal in">
+      <p class="font-mono text-[12px] text-[--amber] tracking-[0.2em] mb-4">CSS LAYOUT · REVISION SHEET</p>
+      <h1 class="font-display text-5xl md:text-6xl font-semibold leading-[1.05] mb-6">
+        Flexbox & Grid,<br>
+        <span class="text-[--teal]">measured</span> &amp; <span class="text-[--coral]">annotated</span>.
+      </h1>
+      <p class="text-[--muted] text-[16px] leading-relaxed max-w-md mb-8">
+        Every property, drawn to scale. Toggle a value, watch the box move, read the exact
+        CSS rule next to its Tailwind class — no guessing, no scrolling through docs.
+      </p>
+      <div class="flex gap-3 font-mono text-[12px]">
+        <a href="#flex" class="px-5 py-3 rounded-lg bg-[--teal] text-[#04211d] font-semibold hover:brightness-110 transition">Start with Flexbox →</a>
+        <a href="#grid" class="px-5 py-3 rounded-lg border border-[--bp-line] text-[--paper] hover:border-[--coral] transition">Jump to Grid →</a>
+      </div>
+    </div>
+    <div class="relative float">
+      <div class="panel crop rounded-xl p-6 glow-teal">
+        <div class="flex justify-between items-center mb-4">
+          <span class="dim-label">FIG.01 — display:grid</span>
+          <span class="dim-label text-[--teal]">⟵ 12 units ⟶</span>
+        </div>
+        <div class="hero-grid-anim h-56">
+          <div class="hero-cell" style="animation-delay:0s"></div>
+          <div class="hero-cell" style="animation-delay:.2s"></div>
+          <div class="hero-cell" style="animation-delay:.4s"></div>
+          <div class="hero-cell" style="animation-delay:.6s"></div>
+          <div class="hero-cell" style="animation-delay:.8s"></div>
+          <div class="hero-cell" style="animation-delay:1s"></div>
+          <div class="hero-cell" style="animation-delay:1.2s"></div>
+          <div class="hero-cell" style="animation-delay:1.4s"></div>
+          <div class="hero-cell" style="animation-delay:1.6s"></div>
+          <div class="hero-cell" style="animation-delay:1.8s"></div>
+          <div class="hero-cell" style="animation-delay:2s"></div>
+          <div class="hero-cell" style="animation-delay:2.2s"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ FLEXBOX SECTION ============ -->
+<section id="flex" class="max-w-6xl mx-auto px-6 py-20 reveal">
+  <div class="flex items-baseline gap-4 mb-2">
+    <span class="font-display text-[--teal] text-sm">01</span>
+    <h2 class="font-display text-3xl font-semibold">Flexbox Container</h2>
+  </div>
+  <p class="text-[--muted] max-w-2xl mb-10">One axis at a time. Flex lays children out along a <em>main axis</em> and lets you align them on the <em>cross axis</em>. Click a value below — the live rig updates instantly, in real CSS and in Tailwind.</p>
+
+  <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
+
+    <!-- LIVE DEMO -->
+    <div class="panel crop rounded-xl p-6">
+      <div class="flex justify-between items-center mb-4">
+        <span class="dim-label">LIVE RIG</span>
+        <span class="dim-label text-[--teal] pulse-line">● rendering</span>
+      </div>
+      <div id="flexDemo" class="min-h-[280px] rounded-lg border border-dashed border-[--bp-line] p-4 gap-3" style="display:flex;">
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] h-16 w-16">01</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] h-16 w-24">02</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] h-16 w-16">03</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] h-16 w-20">04</div>
+      </div>
+
+      <!-- controls -->
+      <div class="mt-6 space-y-4">
+        <div>
+          <p class="dim-label mb-2">flex-direction</p>
+          <div class="flex flex-wrap gap-2" data-group="direction">
+            <button class="chip active" data-prop="direction" data-val="row">row</button>
+            <button class="chip" data-prop="direction" data-val="row-reverse">row-reverse</button>
+            <button class="chip" data-prop="direction" data-val="column">column</button>
+            <button class="chip" data-prop="direction" data-val="column-reverse">column-reverse</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">justify-content <span class="opacity-60">(main axis)</span></p>
+          <div class="flex flex-wrap gap-2" data-group="justify">
+            <button class="chip active" data-prop="justify" data-val="flex-start">flex-start</button>
+            <button class="chip" data-prop="justify" data-val="center">center</button>
+            <button class="chip" data-prop="justify" data-val="flex-end">flex-end</button>
+            <button class="chip" data-prop="justify" data-val="space-between">space-between</button>
+            <button class="chip" data-prop="justify" data-val="space-around">space-around</button>
+            <button class="chip" data-prop="justify" data-val="space-evenly">space-evenly</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">align-items <span class="opacity-60">(cross axis)</span></p>
+          <div class="flex flex-wrap gap-2" data-group="align">
+            <button class="chip active" data-prop="align" data-val="stretch">stretch</button>
+            <button class="chip" data-prop="align" data-val="flex-start">flex-start</button>
+            <button class="chip" data-prop="align" data-val="center">center</button>
+            <button class="chip" data-prop="align" data-val="flex-end">flex-end</button>
+            <button class="chip" data-prop="align" data-val="baseline">baseline</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">flex-wrap</p>
+          <div class="flex flex-wrap gap-2" data-group="wrap">
+            <button class="chip active" data-prop="wrap" data-val="nowrap">nowrap</button>
+            <button class="chip" data-prop="wrap" data-val="wrap">wrap</button>
+            <button class="chip" data-prop="wrap" data-val="wrap-reverse">wrap-reverse</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">gap</p>
+          <div class="flex flex-wrap gap-2" data-group="gap">
+            <button class="chip" data-prop="gap" data-val="0">0px</button>
+            <button class="chip active" data-prop="gap" data-val="12">12px</button>
+            <button class="chip" data-prop="gap" data-val="24">24px</button>
+            <button class="chip" data-prop="gap" data-val="40">40px</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE PANEL -->
+    <div class="panel crop rounded-xl p-6 flex flex-col">
+      <div class="flex gap-4 border-b border-[--bp-line] mb-4">
+        <div class="code-tab active" data-tab="css">style.css</div>
+        <div class="code-tab" data-tab="tw">tailwind</div>
+      </div>
+      <pre id="flexCode" class="codebox flex-1"></pre>
+      <div class="mt-4 pt-4 border-t border-[--bp-line] font-mono text-[11px] text-[--muted] leading-relaxed">
+        <span class="text-[--amber]">USE CASE →</span> nav bars, button groups, card rows, centering a single element, equal-height sidebars.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRID SECTION ============ -->
+<section id="grid" class="max-w-6xl mx-auto px-6 py-20 reveal">
+  <div class="flex items-baseline gap-4 mb-2">
+    <span class="font-display text-[--coral] text-sm">02</span>
+    <h2 class="font-display text-3xl font-semibold">Grid Container</h2>
+  </div>
+  <p class="text-[--muted] max-w-2xl mb-10">Two axes at once. Grid carves the container into rows <em>and</em> columns up front, then places children into that structure — ideal when layout needs real rows and columns, not just a line of items.</p>
+
+  <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
+
+    <div class="panel crop rounded-xl p-6">
+      <div class="flex justify-between items-center mb-4">
+        <span class="dim-label">LIVE RIG</span>
+        <span class="dim-label text-[--coral] pulse-line">● rendering</span>
+      </div>
+      <div id="gridDemo" class="min-h-[280px] rounded-lg border border-dashed border-[--bp-line] p-4" style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">01</div>
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">02</div>
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">03</div>
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">04</div>
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">05</div>
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400] h-16">06</div>
+      </div>
+
+      <div class="mt-6 space-y-4">
+        <div>
+          <p class="dim-label mb-2">grid-template-columns</p>
+          <div class="flex flex-wrap gap-2" data-group="cols">
+            <button class="chip" data-prop="cols" data-val="2">2 cols</button>
+            <button class="chip active" data-prop="cols" data-val="3">3 cols</button>
+            <button class="chip" data-prop="cols" data-val="4">4 cols</button>
+            <button class="chip" data-prop="cols" data-val="auto">auto-fit minmax</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">justify-items <span class="opacity-60">(inline axis)</span></p>
+          <div class="flex flex-wrap gap-2" data-group="jitems">
+            <button class="chip active" data-prop="jitems" data-val="stretch">stretch</button>
+            <button class="chip" data-prop="jitems" data-val="start">start</button>
+            <button class="chip" data-prop="jitems" data-val="center">center</button>
+            <button class="chip" data-prop="jitems" data-val="end">end</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">align-items <span class="opacity-60">(block axis)</span></p>
+          <div class="flex flex-wrap gap-2" data-group="aitems">
+            <button class="chip active" data-prop="aitems" data-val="stretch">stretch</button>
+            <button class="chip" data-prop="aitems" data-val="start">start</button>
+            <button class="chip" data-prop="aitems" data-val="center">center</button>
+            <button class="chip" data-prop="aitems" data-val="end">end</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">grid-auto-flow</p>
+          <div class="flex flex-wrap gap-2" data-group="flow">
+            <button class="chip active" data-prop="flow" data-val="row">row</button>
+            <button class="chip" data-prop="flow" data-val="column">column</button>
+            <button class="chip" data-prop="flow" data-val="dense">row dense</button>
+          </div>
+        </div>
+        <div>
+          <p class="dim-label mb-2">gap</p>
+          <div class="flex flex-wrap gap-2" data-group="ggap">
+            <button class="chip" data-prop="ggap" data-val="0">0px</button>
+            <button class="chip active" data-prop="ggap" data-val="12">12px</button>
+            <button class="chip" data-prop="ggap" data-val="24">24px</button>
+            <button class="chip" data-prop="ggap" data-val="40">40px</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel crop rounded-xl p-6 flex flex-col">
+      <div class="flex gap-4 border-b border-[--bp-line] mb-4">
+        <div class="code-tab active" data-tab="css">style.css</div>
+        <div class="code-tab" data-tab="tw">tailwind</div>
+      </div>
+      <pre id="gridCode" class="codebox flex-1"></pre>
+      <div class="mt-4 pt-4 border-t border-[--bp-line] font-mono text-[11px] text-[--muted] leading-relaxed">
+        <span class="text-[--coral]">USE CASE →</span> page shells, photo galleries, dashboards, pricing tables, any layout with real rows &amp; columns.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ITEM-LEVEL PROPS ============ -->
+<section id="items" class="max-w-6xl mx-auto px-6 py-20 reveal">
+  <div class="flex items-baseline gap-4 mb-2">
+    <span class="font-display text-[--amber] text-sm">03</span>
+    <h2 class="font-display text-3xl font-semibold">Child / Item Properties</h2>
+  </div>
+  <p class="text-[--muted] max-w-2xl mb-10">These apply to the <em>children</em>, not the container — they override how one item behaves inside the layout its parent already set up.</p>
+
+  <div class="grid md:grid-cols-2 gap-6">
+
+    <!-- flex-grow/shrink/basis -->
+    <div class="panel crop rounded-xl p-6">
+      <p class="font-display font-semibold mb-1 text-[--teal]">flex-grow / flex-shrink / flex-basis</p>
+      <p class="text-[--muted] text-[13px] mb-4">Controls how a flex item stretches, shrinks, or starts sized before free space is distributed.</p>
+      <div class="flex gap-3 h-16 mb-4">
+        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" style="flex:1 1 0%;">grow:1</div>
+        <div class="demo-item bg-[--teal]/60 border border-[--teal] text-[#04211d]" style="flex:2 1 0%;">grow:2</div>
+        <div class="demo-item bg-[--teal]/30 border border-[--teal] text-[--teal]" style="flex:1 1 0%;">grow:1</div>
+      </div>
+      <pre class="codebox">.item { flex-grow: 2; }
+.item { flex-shrink: 0; }
+.item { flex-basis: 200px; }
+
+/* tailwind */
+class="grow-[2]"
+class="shrink-0"
+class="basis-[200px]"</pre>
+    </div>
+
+    <!-- order -->
+    <div class="panel crop rounded-xl p-6">
+      <p class="font-display font-semibold mb-1 text-[--teal]">order</p>
+      <p class="text-[--muted] text-[13px] mb-4">Reorders items visually without touching the HTML source order. Lower numbers render first.</p>
+      <div class="flex gap-3 h-16 mb-4">
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:3;">A · order:3</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:1;">B · order:1</div>
+        <div class="demo-item bg-[--teal]/80 text-[#04211d] flex-1" style="order:2;">C · order:2</div>
+      </div>
+      <pre class="codebox">.a { order: 3; }
+.b { order: 1; }
+.c { order: 2; }
+
+/* tailwind */
+class="order-3"
+class="order-1"
+class="order-2"</pre>
+    </div>
+
+    <!-- align-self -->
+    <div class="panel crop rounded-xl p-6">
+      <p class="font-display font-semibold mb-1 text-[--coral]">align-self</p>
+      <p class="text-[--muted] text-[13px] mb-4">Overrides the container's align-items for just one item — works in both flex and grid.</p>
+      <div class="flex gap-3 h-24 mb-4" style="align-items:stretch;">
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:flex-start;">start</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:center;">center</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral] flex-1" style="align-self:flex-end;">end</div>
+      </div>
+      <pre class="codebox">.item { align-self: center; }
+
+/* tailwind */
+class="self-center"
+class="self-start"
+class="self-end"</pre>
+    </div>
+
+    <!-- grid-column/row span -->
+    <div class="panel crop rounded-xl p-6">
+      <p class="font-display font-semibold mb-1 text-[--coral]">grid-column / grid-row span</p>
+      <p class="text-[--muted] text-[13px] mb-4">Lets one grid child stretch across multiple tracks — the classic "featured card" pattern.</p>
+      <div class="grid grid-cols-3 gap-3 h-24 mb-4">
+        <div class="demo-item bg-[--coral]/80 text-[#3a1400]" style="grid-column: span 2;">span 2 cols</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral]">1×1</div>
+        <div class="demo-item bg-[--coral]/30 border border-[--coral] text-[--coral]" style="grid-row: span 1;">1×1</div>
+      </div>
+      <pre class="codebox">.feature {
+  grid-column: span 2 / span 2;
+  grid-row: span 1;
+}
+
+/* tailwind */
+class="col-span-2 row-span-1"</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHEATSHEET ============ -->
+<section id="cheatsheet" class="max-w-6xl mx-auto px-6 py-20 reveal">
+  <div class="flex items-baseline gap-4 mb-2">
+    <span class="font-display text-[--paper] text-sm">04</span>
+    <h2 class="font-display text-3xl font-semibold">Full Cheat Sheet</h2>
+  </div>
+  <p class="text-[--muted] max-w-2xl mb-10">Every property covered above, plus a few extras, in one scannable table — normal CSS next to its Tailwind class.</p>
+
+  <div class="panel crop rounded-xl overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[720px]">
+      <thead>
+        <tr class="font-mono text-[11px] text-[--amber] tracking-wide border-b border-[--bp-line]">
+          <th class="py-3 px-5">Property</th>
+          <th class="py-3 px-5">Normal CSS</th>
+          <th class="py-3 px-5">Tailwind class</th>
+          <th class="py-3 px-5">Scope</th>
+        </tr>
+      </thead>
+      <tbody class="font-mono text-[12px]" id="cheatBody"></tbody>
+    </table>
+  </div>
+
+  <p class="text-center text-[--muted] font-mono text-[11px] mt-10">— end of sheet · scroll up to replay the live rigs —</p>
+</section>
+
+<footer class="border-t border-[--bp-line] py-8 text-center font-mono text-[11px] text-[--muted]">
+  built with tailwind + vanilla js · flexbox = one axis · grid = two axes
+</footer>
+
+<script>
+  // reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ---------------- FLEX DEMO ---------------- */
+  const flexState = { direction:'row', justify:'flex-start', align:'stretch', wrap:'nowrap', gap:12 };
+  const flexDemo = document.getElementById('flexDemo');
+  const flexCode = document.getElementById('flexCode');
+  let flexTab = 'css';
+
+  function applyFlex(){
+    flexDemo.style.flexDirection = flexState.direction;
+    flexDemo.style.justifyContent = flexState.justify;
+    flexDemo.style.alignItems = flexState.align;
+    flexDemo.style.flexWrap = flexState.wrap;
+    flexDemo.style.gap = flexState.gap + 'px';
+    renderFlexCode();
+  }
+
+  const twJustifyMap = {'flex-start':'justify-start','center':'justify-center','flex-end':'justify-end','space-between':'justify-between','space-around':'justify-around','space-evenly':'justify-evenly'};
+  const twAlignMap = {'stretch':'items-stretch','flex-start':'items-start','center':'items-center','flex-end':'items-end','baseline':'items-baseline'};
+  const twDirMap = {'row':'flex-row','row-reverse':'flex-row-reverse','column':'flex-col','column-reverse':'flex-col-reverse'};
+  const twWrapMap = {'nowrap':'flex-nowrap','wrap':'flex-wrap','wrap-reverse':'flex-wrap-reverse'};
+  const twGapMap = {0:'gap-0',12:'gap-3',24:'gap-6',40:'gap-10'};
+
+  function renderFlexCode(){
+    if(flexTab==='css'){
+      flexCode.textContent =
+`.container {
+  display: flex;
+  flex-direction: ${flexState.direction};
+  justify-content: ${flexState.justify};
+  align-items: ${flexState.align};
+  flex-wrap: ${flexState.wrap};
+  gap: ${flexState.gap}px;
+}`;
+    } else {
+      flexCode.textContent =
+`<div class="flex ${twDirMap[flexState.direction]}
+  ${twJustifyMap[flexState.justify]} ${twAlignMap[flexState.align]}
+  ${twWrapMap[flexState.wrap]} ${twGapMap[flexState.gap]}">
+  ...
+</div>`;
+    }
+  }
+
+  document.querySelectorAll('#flex [data-prop]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const {prop,val} = btn.dataset;
+      flexState[prop] = (prop==='gap') ? Number(val) : val;
+      document.querySelectorAll(`#flex [data-group="${btn.closest('[data-group]').dataset.group}"] .chip`).forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      applyFlex();
+    });
+  });
+
+  document.querySelectorAll('#flex .code-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('#flex .code-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      flexTab = tab.dataset.tab;
+      renderFlexCode();
+    });
+  });
+
+  applyFlex();
+
+  /* ---------------- GRID DEMO ---------------- */
+  const gridState = { cols:'3', jitems:'stretch', aitems:'stretch', flow:'row', gap:12 };
+  const gridDemo = document.getElementById('gridDemo');
+  const gridCode = document.getElementById('gridCode');
+  let gridTab = 'css';
+
+  const colsCSS = {2:'repeat(2, 1fr)',3:'repeat(3, 1fr)',4:'repeat(4, 1fr)',auto:'repeat(auto-fit, minmax(120px, 1fr))'};
+  const colsTW = {2:'grid-cols-2',3:'grid-cols-3',4:'grid-cols-4',auto:'grid-cols-[repeat(auto-fit,minmax(120px,1fr))]'};
+  const twJItemsMap = {stretch:'justify-items-stretch',start:'justify-items-start',center:'justify-items-center',end:'justify-items-end'};
+  const twAItemsMap = {stretch:'items-stretch',start:'items-start',center:'items-center',end:'items-end'};
+  const twFlowMap = {row:'grid-flow-row',column:'grid-flow-col',dense:'grid-flow-row-dense'};
+  const twGGapMap = {0:'gap-0',12:'gap-3',24:'gap-6',40:'gap-10'};
+
+  function applyGrid(){
+    gridDemo.style.gridTemplateColumns = colsCSS[gridState.cols];
+    gridDemo.style.justifyItems = gridState.jitems;
+    gridDemo.style.alignItems = gridState.aitems;
+    gridDemo.style.gridAutoFlow = gridState.flow==='dense' ? 'row dense' : gridState.flow;
+    gridDemo.style.gap = gridState.gap + 'px';
+    renderGridCode();
+  }
+
+  function renderGridCode(){
+    if(gridTab==='css'){
+      gridCode.textContent =
+`.container {
+  display: grid;
+  grid-template-columns: ${colsCSS[gridState.cols]};
+  justify-items: ${gridState.jitems};
+  align-items: ${gridState.aitems};
+  grid-auto-flow: ${gridState.flow==='dense' ? 'row dense' : gridState.flow};
+  gap: ${gridState.gap}px;
+}`;
+    } else {
+      gridCode.textContent =
+`<div class="grid ${colsTW[gridState.cols]}
+  ${twJItemsMap[gridState.jitems]} ${twAItemsMap[gridState.aitems]}
+  ${twFlowMap[gridState.flow]} ${twGGapMap[gridState.gap]}">
+  ...
+</div>`;
+    }
+  }
+
+  document.querySelectorAll('#grid [data-prop]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const {prop,val} = btn.dataset;
+      gridState[prop] = (prop==='ggap') ? Number(val) : val;
+      if(prop==='ggap') gridState.gap = Number(val);
+      document.querySelectorAll(`#grid [data-group="${btn.closest('[data-group]').dataset.group}"] .chip`).forEach(c=>c.classList.remove('active','grid-active'));
+      btn.classList.add('active','grid-active');
+      applyGrid();
+    });
+  });
+
+  document.querySelectorAll('#grid .code-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('#grid .code-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      gridTab = tab.dataset.tab;
+      renderGridCode();
+    });
+  });
+
+  applyGrid();
+
+  /* ---------------- CHEAT SHEET TABLE ---------------- */
+  const rows = [
+    ['display: flex','display','flex','flex','container'],
+    ['display: grid','display','grid','grid','container'],
+    ['flex-direction: column','flex','flex-col','flex','container'],
+    ['flex-wrap: wrap','flex','flex-wrap','flex','container'],
+    ['justify-content: center','flex/grid','justify-center','both','container'],
+    ['align-items: center','flex/grid','items-center','both','container'],
+    ['align-content: center','flex/grid','content-center','both','container'],
+    ['gap: 16px','flex/grid','gap-4','both','container'],
+    ['flex-grow: 1','flex','grow','flex','item'],
+    ['flex-shrink: 0','flex','shrink-0','flex','item'],
+    ['flex-basis: 200px','flex','basis-[200px]','flex','item'],
+    ['order: 2','flex/grid','order-2','both','item'],
+    ['align-self: end','flex/grid','self-end','both','item'],
+    ['grid-template-columns: repeat(3,1fr)','grid','grid-cols-3','grid','container'],
+    ['grid-template-rows: repeat(2,1fr)','grid','grid-rows-2','grid','container'],
+    ['grid-auto-flow: column','grid','grid-flow-col','grid','container'],
+    ['justify-items: center','grid','justify-items-center','grid','container'],
+    ['grid-column: span 2','grid','col-span-2','grid','item'],
+    ['grid-row: span 2','grid','row-span-2','grid','item'],
+    ['place-items: center','grid','place-items-center','grid','container'],
+  ];
+  const tbody = document.getElementById('cheatBody');
+  tbody.innerHTML = rows.map((r,i)=>`
+    <tr class="border-b border-[--bp-line]/60 hover:bg-white/[0.03] transition">
+      <td class="py-2.5 px-5 text-[--paper]">${r[0].split(':')[0]}</td>
+      <td class="py-2.5 px-5 text-[--muted]">${r[0]}</td>
+      <td class="py-2.5 px-5 text-[--amber]">${r[2]}</td>
+      <td class="py-2.5 px-5 text-[--muted]">
+        <span class="px-2 py-0.5 rounded-full border border-[--bp-line] text-[10px]">${r[4]}</span>
+      </td>
+    </tr>`).join('');
+</script>
+</body>
+</html>
